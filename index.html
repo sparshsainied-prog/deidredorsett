@@ -53,7 +53,7 @@ p { margin: 0 0 1rem; }
 .bar nav a:hover, .bar nav a:focus-visible { color: var(--accent); }
 
 .hero { position: relative; height: 100svh; min-height: 40rem; }
-.js .hero { height: 260svh; }
+.js .hero { height: 340svh; }
 .stage { position: sticky; top: 0; height: 100svh; min-height: 40rem; overflow: hidden; background: var(--night); }
 .layer { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
 .layer picture, .layer img { width: 100%; height: 100%; object-fit: cover; }
@@ -64,6 +64,9 @@ p { margin: 0 0 1rem; }
 .open .from { margin-top: .9rem; font-style: italic; color: var(--hi); font-size: 1.1rem; }
 .inside { position: absolute; inset: 7rem var(--gutter) 2.5rem; display: grid; grid-template-columns: auto minmax(0, 30rem); justify-content: center; align-items: center; gap: clamp(2rem, 5vw, 4.5rem); }
 .cover { height: min(64svh, 35rem); width: auto; aspect-ratio: 900 / 900; box-shadow: 0 1.6rem 3.4rem rgba(0,0,0,.7); will-change: transform, opacity; transform-origin: 50% 60%; }
+.cv { position: relative; overflow: hidden; }
+.cv img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cv .mn, .cv .fr { will-change: transform, opacity; }
 .copy { will-change: transform, opacity; }
 .js .cover, .js .copy { opacity: 0; }
 html:not(.js) .open { display: none; }
@@ -134,7 +137,7 @@ footer p { margin: 0; }
       <p class="from">The Purple Moon, by Deidre Dorsett</p>
     </div>
     <div class="inside">
-      <img class="cover" src="img/cover.jpg" alt="The Purple Moon by Deidre Dorsett: a large pink moon over layered purple mountains" width="900" height="900">
+      <div class="cover cv" role="img" aria-label="The Purple Moon by Deidre Dorsett: a large pink moon over layered purple mountains"><img src="img/moon-sky.jpg" alt="" width="900" height="900"><img class="mn" src="img/moon-disc.webp" alt="" width="900" height="900"><img class="fr" src="img/moon-front.webp" alt="" width="900" height="900"></div>
       <div class="copy">
         <h1>The Purple Moon</h1>
         <p class="tag">A fantasy of pure enlightenment.</p>
@@ -185,14 +188,20 @@ footer p { margin: 0; }
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function cl(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function ease(x) { return 1 - Math.pow(1 - x, 3); }
+  var mn = document.querySelector('.cv .mn'), fr = document.querySelector('.cv .fr');
   function draw(p) {
     bg.style.transform = 'scale(' + (1 + .14 * p).toFixed(4) + ')';
-    var o = cl(1 - p / .32);
+    var o = cl(1 - p / .14);
     open.style.opacity = o.toFixed(3); open.style.transform = 'translate3d(0,' + (-p * 90).toFixed(1) + 'px,0)';
-    var k = ease(cl((p - .08) / .55));
-    cover.style.opacity = cl((p - .04) / .2).toFixed(3);
-    cover.style.transform = 'translate3d(0,' + ((1 - k) * 60).toFixed(1) + 'px,0) scale(' + (.74 + .26 * k).toFixed(4) + ')';
-    var q = ease(cl((p - .5) / .3));
+    /* the purple moon rises from behind the far ridge into its place, the mountains settling a touch slower */
+    var t = ease(cl((p - .12) / .5)), w = 1 - t;
+    mn.style.transform = 'translate3d(' + (w * -6).toFixed(2) + '%,' + (w * 44).toFixed(2) + '%,0) scale(' + (1 + .08 * w).toFixed(4) + ')';
+    mn.style.opacity = (.55 + .45 * t).toFixed(3);
+    fr.style.transform = 'translate3d(0,' + (w * 3).toFixed(2) + '%,0)';
+    var k = ease(cl((p - .5) / .3));
+    cover.style.opacity = cl((p - .06) / .12).toFixed(3);
+    cover.style.transform = 'translate3d(0,' + ((1 - k) * 4).toFixed(1) + '%,0) scale(' + (1.3 - .3 * k).toFixed(4) + ')';
+    var q = ease(cl((p - .74) / .2));
     copy.style.opacity = q.toFixed(3); copy.style.transform = 'translate3d(0,' + ((1 - q) * 28).toFixed(1) + 'px,0)';
   }
   if (reduce) { document.documentElement.classList.remove('js'); hero.style.height = 'auto'; open.style.display = 'none'; return; }
